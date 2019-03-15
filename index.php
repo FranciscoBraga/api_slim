@@ -6,7 +6,36 @@ use \Psr\Http\Message\ResponseInterface as Response;
 require 'vendor/autoload.php';
 
 //----instanciando objeto app para as rotas -----
-$app =  new \Slim\App;
+$app =  new \Slim\App([
+    'settings'=>['displayErrorDetails' => true]
+    ]);
+
+/*--------Container Dependency  Injection------*/
+class Servico{}
+
+//----------------container pimple--------
+$container  = $app->getContainer();
+$container['servico'] = function()
+{
+    return new Servico;
+};
+//processando uma classe detro de uma rota
+$app->get('/servico', function(Request $request, Response $response){
+
+    $servico = $this->get('servico');
+    var_dump($servico);
+});
+
+//-------controllers como serviço----------------
+$container  = $app->getContainer();
+$container['Home'] = function()
+{
+    return new MyApp\controllers\Home( new MyApp\View);
+};
+$app->get('/usuario', 'Home:index');
+
+//executa o get
+$app->run();
 
 /*
 get-Recuperar recursos do servidor (select)
@@ -15,6 +44,7 @@ put - Atualizar dados no servidor (Update)
 delete - Deletar dados do servidro (Delete)
 */
 
+/* 
  //atualizando dados que estão no servidor
  $app->delete('/usuarios/remove{id}',function(Request $request , Response $response){
     
@@ -47,10 +77,9 @@ $app->put('/usuarios/atualiza',function(Request $request , Response $response){
  
     return $response->getBody()->write('Dados Atualizados!');
   });
-//executa o get
-$app->run();
 
-/* 
+
+
 
 //-----definindo rotas para enviar dados para servidor---
 $app->get('/postagens2',function(){
