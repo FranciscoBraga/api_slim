@@ -13,7 +13,6 @@ class Home
 
     public function index($request, $response)
     {
-     
         var_dump($this->view);
         return  $response->write("Teste index");
     }
